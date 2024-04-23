@@ -1,15 +1,40 @@
 const express = require('express');
 const app = express();
 require('dotenv').config();
+var bodyParser = require("body-parser");
 
 const addCurrentTime = function (req, res, next) {
   req.time = new Date().toString();
   next();
 };
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+app.post("/name", function (req, res) {
+  var firstName = req.body.first;
+  var lastName = req.body.last;
+  const fullName = `${firstName} ${lastName}`;
+  res.json({ name: fullName });
+});
+
 // Route with middleware function and final handler
 app.get('/now', addCurrentTime, function (req, res) {
   res.json({ time: req.time });
+});
+
+app.get("/:word/echo", (req, res) => {
+  const { word } = req.params;
+  res.json({
+    echo: word
+  });
+});
+
+app.get("/name", function (req, res) {
+  var firstName = req.query.first;
+  var lastName = req.query.last;
+  const fullName = `${firstName} ${lastName}`;
+  res.json({ name: fullName });
 });
 
 app.use(function middleware(req, res, next) {
